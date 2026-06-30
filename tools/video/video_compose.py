@@ -1656,6 +1656,8 @@ class VideoCompose(BaseTool):
         for cut in props.get("cuts", []):
             source = cut.get("source", "")
             if source and not source.startswith(("http://", "https://", "file://")):
+                if source.replace("\\", "/").startswith(("projects/", "public/")):
+                    continue
                 resolved = Path(source).resolve()
                 if resolved.exists():
                     posix = resolved.as_posix()
@@ -1720,7 +1722,7 @@ class VideoCompose(BaseTool):
             # local remotion binary via node_modules/.bin. Without this,
             # Windows npx cannot locate the CLI and returns "could not
             # determine executable to run".
-            self.run_command(cmd, timeout=600, cwd=composer_dir)
+            self.run_command(cmd, timeout=1800, cwd=composer_dir)
         except Exception as e:
             return ToolResult(success=False, error=f"Remotion render failed: {e}")
         finally:
